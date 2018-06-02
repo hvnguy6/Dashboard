@@ -7,8 +7,7 @@ putPath <- '/home/ubuntu/csvFiles/puts/'
 
 callFiles<-list.files(callPath)
 putFiles<- list.files(putPath)
-
-
+ticker<- unlist(strsplit(callFiles, "[.]csv"))
 
 ui <- dashboardPage(
   skin = "black",
@@ -32,16 +31,23 @@ ui <- dashboardPage(
       tabItem(tabName = 'overview',
               fluidRow(
                 column(2,
-                      selectInput('symbol', 'Select Symbol', callFiles)
-              ),
+                      selectInput('symbol', 'Select Symbol', ticker)
+                ),
                 column(2, offset = 1,
                        selectInput('expDate', 'Select Expiration', 'PlaceHolder2')
-              ), 
+                ), 
                 
                 column(2, offset = 1,
                      selectInput('strike', 'Select Strike', 'PlaceHolder3')
+                )
+              ),
+              fluidRow(
+                column(12, textOutput("test")
+                       )
+                
               )
-      )),
+      
+      ),
       tabItem(tabName = 'calls',
         h2('calls')
       ),
@@ -59,9 +65,11 @@ ui <- dashboardPage(
 )
 
 
-server <- function(input, output) { 
+server <- function(input, output) {
   
-  }
+  output$test<-renderText({paste("You chose", input$symbol)})
+}
+                          
 
 shinyApp(ui, server)
 
