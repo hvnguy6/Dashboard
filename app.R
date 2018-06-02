@@ -1,6 +1,7 @@
 
 library(shiny)
 library(shinydashboard)
+source("all_functions.R")
 
 callPath <-'/home/ubuntu/csvFiles/calls/'
 putPath <- '/home/ubuntu/csvFiles/puts/'
@@ -29,6 +30,8 @@ ui <- dashboardPage(
         h2('return')
       ),
       tabItem(tabName = 'overview',
+              
+              
               fluidRow(
                 column(2,
                       selectInput('symbol', 'Select Symbol', ticker)
@@ -41,9 +44,25 @@ ui <- dashboardPage(
                      selectInput('strike', 'Select Strike', 'PlaceHolder3')
                 )
               ),
+              h3('Calls Summary'),
               fluidRow(
-                column(12, textOutput("test")
-                       )
+                column(12, 
+                       tableOutput('c_summary'),
+                       tags$head(tags$style("#c_summary table {background-color: gray; }", media="screen", type="text/css"))
+                       
+                      )
+                
+              ),
+              
+              h3('Puts Summary'),
+              
+              fluidRow(
+                column(12, 
+                       tableOutput('p_summary'),
+                       tags$head(tags$style("#p_summary table {background-color: gray; }", media="screen",
+                                            type="text/css"))
+                       
+                )
                 
               )
       
@@ -67,7 +86,10 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
   
-  output$test<-renderText({paste("You chose", input$symbol)})
+  output$c_summary<-renderTable(optionSummary(input$symbol, 'c'), striped = TRUE, bordered = TRUE, digits = 5, spacing='xs')
+  
+  output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE, digits = 5, spacing='xs')
+  
 }
                           
 
