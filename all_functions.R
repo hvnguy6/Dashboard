@@ -41,6 +41,7 @@ optionWeights <- function(ticker, o_type) {
 
 #this function takes a transformed cvs file and output the a weighted summary table of all the options data
 #input - ticker 
+#input - o_type option type
 optionSummary <-function(ticker, o_type) {
   temp_ticker <-ticker
   temp_type <- o_type
@@ -49,4 +50,22 @@ optionSummary <-function(ticker, o_type) {
   
   return(o_frame)
 }
+
+#this function will give a character vector of all the expiration date
+#input - ticker
+#input - o_type option type
+expirationDate <-function(ticker, o_type) {
+  temp_ticker <-ticker
+  temp_type <- o_type
+  if (temp_type == 'c') {
+    oPath <-'/home/ubuntu/csvFiles/calls/'
+  }else {
+    oPath <-'/home/ubuntu/csvFiles/puts/'
+  }
+  oPath <- paste (oPath, temp_ticker, ".csv", sep = "")  
   
+  xFrame = fread(oPath, header =TRUE, sep = ',')
+  xDate <- unique(xFrame$ExpirationDate)
+  
+  return(xDate)
+}  

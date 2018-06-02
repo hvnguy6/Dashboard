@@ -64,13 +64,15 @@ ui <- dashboardPage(
       
       ),
       tabItem(tabName = 'calls',
-              column(2,
-                     selectInput('c_expDate', 'Select Expiration', 'PlaceHolder3')
+              fluidRow(column(3,
+                       selectInput('c_expDate', 'Select Expiration', choices = NULL)
+                )
               )
       ),
       tabItem(tabName = 'puts',
-              column(2,
-                     selectInput('p_expDate', 'Select Expiration', 'PlaceHolder4')
+              fluidRow(column(3,
+                     selectInput('p_expDate', 'Select Expiration', choices = NULL)
+                )
               )
       ),
       tabItem(tabName = 'simulator',
@@ -84,13 +86,20 @@ ui <- dashboardPage(
 )
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   output$c_summary<-renderTable(optionSummary(input$symbol, 'c'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
   
   output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
+  observe({
+    updateSelectInput(session = session, inputId = "c_expDate", choices = expirationDate(input$symbol, 'c'))
+  })
   
+  observe({
+    updateSelectInput(session = session, inputId = "p_expDate", choices = expirationDate(input$symbol, 'p'))
+  })
 }
+
                           
 
 shinyApp(ui, server)
