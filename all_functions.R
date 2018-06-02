@@ -19,6 +19,8 @@ optionWeights <- function(ticker, o_type) {
   
   #finding the total daily traded volume by option expiration date
   TotalVolume <-xFrame[, list(TotalV = sum(Vol)), by =ExpirationDate]
+  TotalVolume$AllVolume <-sum(TotalVolume$TotalV)
+  
   setkey(TotalVolume, ExpirationDate)
   setkey(xFrame, ExpirationDate)
   #merging the total volume as colume back to the dataframe
@@ -43,7 +45,7 @@ optionSummary <-function(ticker, o_type) {
   temp_ticker <-ticker
   temp_type <- o_type
   x_frame <- optionWeights(temp_ticker, temp_type)
-  o_frame <- x_frame[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), avgDailyGrowthRequiredtoBreakEven = mean(ImpliedStockGrowth_daily), avgWeightedImpliedVol = percent(mean(avgWghtIV)), YrHV = percent(mean(U_Vol1year/(252^.5))), QuarterHV=percent(mean(U_Vol45days/(252^.5))), lastUnderlyingTraded = mean(U_LastTraded) ), by = ExpirationDate]
+  o_frame <- x_frame[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), DlyGrthX100 = mean(ImpliedStockGrowth_daily)*100, avgWeightedImpliedVol = percent(mean(avgWghtIV)), YrHV = percent(mean(U_Vol1year/(252^.5))), QuarterHV=percent(mean(U_Vol45days/(252^.5))), lastUnderlyingTraded = mean(U_LastTraded), allVolumeTraded =mean(AllVolume)), by = ExpirationDate]
   
   return(o_frame)
 }

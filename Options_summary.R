@@ -22,6 +22,8 @@ xPath = paste(callPath, callFiles[8], sep='')
 xFile = fread(xPath, header =TRUE, sep = ',')
 
 TotalVolume <-xFile[, list(TotalV = sum(Vol)), by =ExpirationDate]
+TotalVolume$AllVolume <-sum(TotalVolume$TotalV)
+
 
 setkey(TotalVolume, ExpirationDate)
 setkey(xFile, ExpirationDate)
@@ -35,7 +37,7 @@ setkey(WeightedVol, ExpirationDate)
 
 xFile <-merge(xFile, WeightedVol, all.x = TRUE)
 
-xFile[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), avgDailyGrowth = mean(ImpliedStockGrowth_daily), avgWeightedImpliedVol = percent(mean(avgWghtIV)), YrHV = percent(mean(U_Vol1year/(252^.5))), QuarterHV=percent(mean(U_Vol45days/(252^.5))), lastUnderlyingTraded = mean(U_LastTraded) ), by = ExpirationDate]
+xFile[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), avgDailyGrowth = mean(ImpliedStockGrowth_daily), avgWeightedImpliedVol = percent(mean(avgWghtIV)), YrHV = percent(mean(U_Vol1year/(252^.5))), QuarterHV=percent(mean(U_Vol45days/(252^.5))), lastUnderlyingTraded = mean(U_LastTraded), allVolumeTraded =mean(AllVolume) ), by = ExpirationDate]
 
 
 #loop through each expiration date
