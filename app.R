@@ -68,13 +68,29 @@ ui <- dashboardPage(
                        selectInput('c_expDate', 'Select Expiration', choices = NULL)
                 )
               ),
-              fluidRow(highchartOutput(outputId = 'c_x_Volume'
+              fluidRow(highchartOutput(outputId = 'c_x_Volume', height = 300
+                )
+              ),
+              fluidRow(highchartOutput(outputId = 'c_iv_x', height = 300
+                )
+              ),
+              fluidRow(highchartOutput(outputId = 'c_inMoney', height = 300
                 )
               )
       ),
       tabItem(tabName = 'puts',
               fluidRow(column(3,
                      selectInput('p_expDate', 'Select Expiration', choices = NULL)
+                )
+              ),
+              
+              fluidRow(highchartOutput(outputId = 'p_x_Volume', height = 300
+                )
+              ),
+              fluidRow(highchartOutput(outputId = 'p_iv_x', height = 300
+                )
+              ),
+              fluidRow(highchartOutput(outputId = 'p_inMoney', height = 300
                 )
               )
       ),
@@ -95,23 +111,24 @@ server <- function(input, output, session) {
   
   output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
   
-  output$c_x_Volume <- renderHighchart({chartVolumePrice(optionWeights('AAPL','c'),'2018-06-08')
-  })
-  
-  
   observe({
     updateSelectInput(session = session, inputId = "c_expDate", choices = expirationDate(input$symbol, 'c'))
+    c<-optionWeights(input$symbol, 'c')
+    output$c_x_Volume <- renderHighchart({chartVolumePrice(c, input$c_expDate) })
+    output$c_iv_x <-renderHighchart({chartIVStrike(c, input$c_expDate) })
+    output$c_inMoney <-renderHighchart({chartInMoneyStrike(c, input$c_expDate)  })
   })
-  
   observe({
     updateSelectInput(session = session, inputId = "p_expDate", choices = expirationDate(input$symbol, 'p'))
+    p<-optionWeights(input$symbol, 'p')
+    output$p_x_Volume <- renderHighchart({chartVolumePrice(p, input$p_expDate) })
+    output$p_iv_x <-renderHighchart({chartIVStrike(p, input$p_expDate) })
+    output$p_inMoney <-renderHighchart({chartInMoneyStrike(p, input$p_expDate)  })
   })
-  
-  
 }
 
-                          
 
+                
 shinyApp(ui, server)
 
 # Run the application 
