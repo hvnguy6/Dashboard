@@ -1,5 +1,7 @@
 library('data.table')
 library('scales')
+library('highcharter')
+library("dplyr")
 
 #This function is the baseline function that will transform the baseline CSV to calculate the weighted IV.  
 #input ticker: is the symbol of the stocks: 'AAPL'
@@ -63,9 +65,31 @@ expirationDate <-function(ticker, o_type) {
     oPath <-'/home/ubuntu/csvFiles/puts/'
   }
   oPath <- paste (oPath, temp_ticker, ".csv", sep = "")  
-  
   xFrame = fread(oPath, header =TRUE, sep = ',')
   xDate <- unique(xFrame$ExpirationDate)
-  
   return(xDate)
-}  
+} 
+
+#this function will generate the first chart of volume vs price 
+chartVolumePrice <-function(xFrame, xDate) {
+  c<-subset(xFrame, xFrame$ExpirationDate == xDate)
+  highchart() %>%
+  hc_add_series(c, hcaes(x=Strike, y=Vol, z=VolumeWeight), type = "column",
+                  name = "Volume Traded",
+                  color = 'blue', showInLegend = FALSE) %>%
+  hc_yAxis(title = list(text = "Volume Traded"), allowDecimals = FALSE) %>%
+  hc_xAxis(data =c$Strike,
+             tickmarkPlacement = "on",
+             opposite = FALSE) %>%
+  hc_title(text = '2018-06-08',
+             style = list(fontWeight = "bold")) %>%
+  hc_subtitle(text = "Volume Traded Vs Strike Price") %>%
+  hc_tooltip(valueDecimals = 0,
+               pointFormat = "Percent: {point.z:.2f} <br> Volume: {point.y}") %>%
+  hc_add_theme(hc_theme_538())
+}
+
+
+
+
+

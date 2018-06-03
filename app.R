@@ -67,6 +67,9 @@ ui <- dashboardPage(
               fluidRow(column(3,
                        selectInput('c_expDate', 'Select Expiration', choices = NULL)
                 )
+              ),
+              fluidRow(highchartOutput(outputId = 'c_x_Volume'
+                )
               )
       ),
       tabItem(tabName = 'puts',
@@ -91,6 +94,11 @@ server <- function(input, output, session) {
   output$c_summary<-renderTable(optionSummary(input$symbol, 'c'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
   
   output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
+  
+  output$c_x_Volume <- renderHighchart({chartVolumePrice(optionWeights('AAPL','c'),'2018-06-08')
+  })
+  
+  
   observe({
     updateSelectInput(session = session, inputId = "c_expDate", choices = expirationDate(input$symbol, 'c'))
   })
@@ -98,6 +106,8 @@ server <- function(input, output, session) {
   observe({
     updateSelectInput(session = session, inputId = "p_expDate", choices = expirationDate(input$symbol, 'p'))
   })
+  
+  
 }
 
                           
