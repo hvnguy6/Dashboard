@@ -45,7 +45,8 @@ ui <- dashboardPage(
         fluidRow(highchartOutput(outputId = 'Plot_volume_adjustedPrice', height = "350px")
                 ),
         br(),
-        verbatimTextOutput(outputId = 'summary')
+        #verbatimTextOutput()
+        formattableOutput(outputId = 'summary')
       ),
       
       
@@ -194,8 +195,8 @@ server <- function(input, output, session) {
     data.stats_summary(some.raw.data = my.current.raw.data())
   })
   
-  output$summary <- renderPrint({
-    my.curent.summary.data()
+  output$summary <- renderFormattable({
+    formattable(my.curent.summary.data())
   })
   
   

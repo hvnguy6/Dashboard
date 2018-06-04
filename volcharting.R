@@ -62,7 +62,7 @@ SPX_VS_graph <- function() {
         # lines(x = spx.data.close$GSPC.Adjusted.3, col = "darkblue")
         # lines(x = spx.data.close$GSPC.Adjusted.4, col = "darkviolet")
         spx.data.close[,c(-2,-3)] %>%
-        dygraph(main = "SPX vs VIX lower bound and VXST upper") %>%
+        dygraph(main = "SPX vs VIX lower bound and VXST upper", group = "SPX VS VIX vs VXST") %>%
         dyAxis("y", label = "Index") %>%
         dyHighlight(hideOnMouseOut = T,
                     highlightSeriesBackgroundAlpha = 0.15) %>%
@@ -89,7 +89,7 @@ UVXY_graph <- function() {
         #      main = "UVXY", major.ticks= "months",
         #      minor.ticks = FALSE, col = "red")
         UVXY.data$UVXY.Adjusted %>%
-                dygraph(main = "UVXY") %>%
+                dygraph(main = "UVXY", group = "SPX VS VIX vs VXST") %>%
                 dyAxis("y", label = "$$$") %>%
                 dyHighlight(hideOnMouseOut = T,
                             highlightSeriesBackgroundAlpha = 0.15) %>%
@@ -106,8 +106,7 @@ UVXY_graph <- function() {
                          labelsSeparateLines = F) 
 }
 
-#UVXY_graph()
-
+UVXY_graph()
 
 
 

@@ -4,6 +4,7 @@ library(fBasics)
 library(dplyr)
 library(highcharter)
 library(scales)
+library(formattable)
 
 
 #getSymbols("FB", from="2018-01-01", to=Sys.Date())
@@ -46,7 +47,7 @@ stock.raw.data <- function(some.stock, some.start.date, some.end.date) {
         return(raw_xts) 
 }
 
-t <- stock.raw.data("FB", "2017-01-01", Sys.Date())
+#t <- stock.raw.data("FB", "2017-01-01", Sys.Date())
 
 
 ### Distribution of daily return - Default is 251 Days
@@ -128,6 +129,7 @@ graph.volume_adjustedPrice <- function(some.raw.data) {
 
 ### Summary on selected days
 data.stats_summary <-function(some.raw.data) {
+        some.raw.data <- as.data.frame(some.raw.data)
         data.daily_return<-diff(log(some.raw.data[, paste0(my.stock, ".Adjusted")]))
         data.daily_return_summary<-basicStats(data.daily_return)
         data.daily_return_summary<-rbind(data.daily_return_summary, "LastValue" = last(data.daily_return))
@@ -139,8 +141,7 @@ data.stats_summary <-function(some.raw.data) {
         
         data.daily_combined_summary <- cbind(data.daily_return_summary,data.daily_volume_summary)
         data.daily_combined_summary <- data.daily_combined_summary[-c(1, 2, 5, 6, 9, 10, 11, 12, 13),,drop=F]
-        
         return(data.daily_combined_summary)
 }
-data.stats_summary(t)
+#formattable(data.stats_summary(t))
 
