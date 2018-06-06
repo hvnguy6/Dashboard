@@ -2,7 +2,7 @@ library(shiny)
 library(shinydashboard)
 source("all_functions.R")
 source("global.R")
-source("volcharting.R")
+
 
 
 callPath <-'/home/ubuntu/csvFiles/calls/'
@@ -96,6 +96,9 @@ ui <- dashboardPage(
               ),
               fluidRow(highchartOutput(outputId = 'c_inMoney', height = 300
                 )
+              ),
+              fluidRow(highchartOutput(outputId = 'c_prices', height = 300
+                )
               )
       ),
       tabItem(tabName = 'puts',
@@ -112,6 +115,9 @@ ui <- dashboardPage(
               ),
               fluidRow(highchartOutput(outputId = 'p_inMoney', height = 300
                 )
+              ),
+              fluidRow(highchartOutput(outputId = 'p_prices', height = 300
+                )
               )
       ),
       
@@ -122,15 +128,19 @@ ui <- dashboardPage(
       
       
       tabItem(tabName = 'spx',
-        h2("SPX VS VIX vs VXST"),
-        dygraphOutput("SPX_VS_graph", height = "300px"),
-        br(),
-        dygraphOutput("UVXY_graph", height = "250px")
+              fluidRow(column(10, 
+                                  h2("SPX VS VIX vs VXST"),
+                                  dygraphOutput("SPX_VS_graph", height = "300px"),
+                                  br(),
+                                  dygraphOutput("UVXY_graph", height = "250px")
+              )
         )
-    )
+      )
     
+    )
   )
 )
+
 
 
 server <- function(input, output, session) {
@@ -203,8 +213,8 @@ server <- function(input, output, session) {
   
   
   ### Option Overview #######################################
-  output$c_summary<-renderTable(optionSummary(input$symbol, 'c'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
-  output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE, digits = 2, spacing='xs')
+  output$c_summary<-renderTable(optionSummary(input$symbol, 'c'), striped = TRUE, bordered = TRUE,  spacing='xs')
+  output$p_summary<-renderTable(optionSummary(input$symbol, 'p'), striped = TRUE, bordered = TRUE,  spacing='xs')
   
   
   ### Call Option ###########################################
@@ -214,6 +224,7 @@ server <- function(input, output, session) {
     output$c_x_Volume <- renderHighchart({chartVolumePrice(c, input$c_expDate) })
     output$c_iv_x <-renderHighchart({chartIVStrike(c, input$c_expDate) })
     output$c_inMoney <-renderHighchart({chartInMoneyStrike(c, input$c_expDate)  })
+    output$c_prices <-renderHighchart({chartPrices(c, input$c_expDate)  })
   })
   
   ### Put Option ############################################
@@ -223,28 +234,22 @@ server <- function(input, output, session) {
     output$p_x_Volume <- renderHighchart({chartVolumePrice(p, input$p_expDate) })
     output$p_iv_x <-renderHighchart({chartIVStrike(p, input$p_expDate) })
     output$p_inMoney <-renderHighchart({chartInMoneyStrike(p, input$p_expDate)  })
+    output$p_prices <-renderHighchart({chartPrices(p, input$p_expDate)  })
   })
   
   
   ### SPX VS VIX vs VXST #####################################
   # SPX_VS_graph
-  my.current.SPX_VS_graph <- reactive({
-    SPX_VS_graph()
-  })
-  
+ 
   output$SPX_VS_graph <- renderDygraph({
-    my.current.SPX_VS_graph()
+     SPX_VS_graph(Load_SPX_VS_data('2017-01-01', Sys.Date()))
   })
   
-  # UVXY_graph
-  my.current.UVXY_graph <- reactive({
-    UVXY_graph()
+  output$UVXY_graph <- renderDygraph({
+    UVXY_graph(stock.raw.data('UVXY', '2017-01-01', Sys.Date()))
   })
   
-  output$UVXY_graph <-  renderDygraph({
-    my.current.UVXY_graph()
-  })
-  
+
   
 }
 
