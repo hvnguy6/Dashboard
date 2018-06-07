@@ -5,13 +5,12 @@ source("global.R")
 
 
 
-callPath <-'/home/ubuntu/csvFiles/calls/'
-putPath <- '/home/ubuntu/csvFiles/puts/'
+callPath <-'/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/calls/'
+putPath <- '/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/puts/'
 
 callFiles<-list.files(callPath)
 putFiles<- list.files(putPath)
 ticker<- unlist(strsplit(callFiles, "[.]csv"))
-
 
 ui <- dashboardPage(
   skin = "black",
