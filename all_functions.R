@@ -225,10 +225,10 @@ Load_SPX_VS_data <- function(some.start.date, some.end.date) {
   xFrame$down2 <-xFrame$SPX.Close*(1-2*xFrame$VIX_1STD_1Month/100)
   
 #Moving the results forward  
-  xFrame$up <- lag(xFrame$up, n =5) 
-  xFrame$up2 <- lag(xFrame$up2, n =5)
-  xFrame$down <- lag(xFrame$down, n = 20)
-  xFrame$down2 <- lag(xFrame$down2, n = 20)
+  xFrame$up <- lag(xFrame$up, 5) 
+  xFrame$up2 <- lag(xFrame$up2, 5)
+  xFrame$down <- lag(xFrame$down, 20)
+  xFrame$down2 <- lag(xFrame$down2, 20)
   
   return(xFrame)
 }
