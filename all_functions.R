@@ -20,9 +20,9 @@ optionWeights <- function(ticker, o_type) {
   temp_ticker <-ticker
   temp_type <- o_type
   if (temp_type == 'c') {
-    oPath <-'/home/ubuntu/csvFiles/calls/'
+    oPath <-'/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/calls/'
   }else {
-    oPath <-'/home/ubuntu/csvFiles/puts/'
+    oPath <-'/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/puts/'
   }
   oPath <- paste (oPath, temp_ticker, ".csv", sep = "")  
   
@@ -57,7 +57,10 @@ optionSummary <-function(ticker, o_type) {
   temp_ticker <-ticker
   temp_type <- o_type
   x_frame <- optionWeights(temp_ticker, temp_type)
-  o_frame <- x_frame[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), DlyGrthX100 = mean(ImpliedStockGrowth_daily)*100, avgWeightedImpliedVol = mean(avgWghtIV)*100, YrHV = mean(U_Vol1year/(252^.5))*100, QuarterHV=mean(U_Vol45days/(252^.5))*100, lastUnderlyingTraded = mean(U_LastTraded), allVolumeTraded =mean(AllVolume)), by = ExpirationDate]
+  o_frame <- x_frame[, list(dailyVolume = sum(Vol), avgBEPrice = mean(BreakEvenStockPrice), DlyGrthX100 = mean(ImpliedStockGrowth_daily)*100, 
+                            avgWeightedImpliedVol = mean(avgWghtIV)*100, YrHV = mean(U_Vol1year/(252^.5))*100, 
+                            QuarterHV=mean(U_Vol45days/(252^.5))*100, lastUnderlyingTraded = mean(U_LastTraded), 
+                            allVolumeTraded =mean(AllVolume), LastQuoted = as.character(as.Date(min(QuoteDate)))), by = ExpirationDate]
   
   return(o_frame)
 }
@@ -71,9 +74,9 @@ expirationDate <-function(ticker, o_type) {
   temp_ticker <-ticker
   temp_type <- o_type
   if (temp_type == 'c') {
-    oPath <-'/home/ubuntu/csvFiles/calls/'
+    oPath <-'/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/calls/'
   }else {
-    oPath <-'/home/ubuntu/csvFiles/puts/'
+    oPath <-'/opt/shiny-server/samples/sample-apps/Dashboard/csvFiles/puts/'
   }
   oPath <- paste (oPath, temp_ticker, ".csv", sep = "")  
   xFrame = fread(oPath, header =TRUE, sep = ',')
@@ -95,7 +98,7 @@ chartVolumePrice <-function(xFrame, xDate) {
     hc_xAxis(data =c$Strike,
              tickmarkPlacement = "on",
              opposite = FALSE) %>%
-    hc_title(text = xDate,
+    hc_title(text = paste("Expiration Date", xDate, "Updated on: ", as.character(as.Date(min(xFrame$QuoteDate))), sep = " "), 
              style = list(fontWeight = "bold")) %>%
     hc_subtitle(text = "Volume Traded Vs Strike Price") %>%
     hc_tooltip(valueDecimals = 0,
@@ -233,6 +236,19 @@ Load_SPX_VS_data <- function(some.start.date, some.end.date) {
   return(xFrame)
 }
 
+Load_UVXY_VIX <- function () {
+  
+  xFrame <-stock.raw.data('UVXY', '2017-01-01', Sys.Date())
+  xFrame <-xFrame[,c(-1,-2,-3,-4, -5)]
+  vix.data <- Quandl('CBOE/VIX')
+  vix.data <- as.xts(vix.data$"VIX Close", order.by = vix.data$Date)
+  colnames(vix.data)[1] <- 'VIX Close'
+  xFrame <- merge(xFrame, vix.data, join='left')
+ 
+   return (xFrame)
+  
+}
+
 ## Plots
 SPX_VS_graph <- function(some.data) {
   # plot(x = spx.data.close$GSPC.Adjusted, xlab = "Time", ylab = "Index",
@@ -268,15 +284,15 @@ UVXY_graph <- function(some.data) {
   # plot(x = UVXY.data$UVXY.Adjusted, xlab = "Time", ylab = "$$$",
   #      main = "UVXY", major.ticks= "months",
   #      minor.ticks = FALSE, col = "red")
-    some.data$UVXY.Adjusted %>%
-    dygraph(main = "UVXY", group = "SPX VS VIX vs VXST") %>%
+    some.data %>%
+    dygraph(main = "UVXY and VIX", group = "SPX VS VIX vs VXST") %>%
     dyAxis("y", label = "$$$") %>%
     dyHighlight(hideOnMouseOut = T,
                 highlightSeriesBackgroundAlpha = 0.15) %>%
     dyOptions(labelsKMB = T,
               gridLineColor = "lightgrey",
               digitsAfterDecimal = 3,
-              colors = '#1aff1a',
+              colors = c('#1aff1a','#9999ff'),
               rightGap = 20,
               strokeWidth = 1) %>%
     dyRangeSelector(dateWindow = c(Sys.Date() - 90, Sys.Date())) %>%

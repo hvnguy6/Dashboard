@@ -245,7 +245,7 @@ server <- function(input, output, session) {
   })
   
   output$UVXY_graph <- renderDygraph({
-    UVXY_graph(stock.raw.data('UVXY', '2017-01-01', Sys.Date()))
+    UVXY_graph(Load_UVXY_VIX ())
   })
   
 
